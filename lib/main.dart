@@ -1,6 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 const String _name = "Alex";
+
+final ThemeData kIOSTheme = ThemeData(
+    primarySwatch: Colors.orange,
+    primaryColor: Colors.grey[100],
+    primaryColorBrightness: Brightness.light);
+
+final ThemeData kDefaultTheme = ThemeData(
+    primarySwatch: Colors.purple, accentColor: Colors.orangeAccent[400]);
 
 void main() => runApp(FlutterChat());
 
@@ -9,6 +18,9 @@ class FlutterChat extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Flutter Chat",
+      theme: defaultTargetPlatform == TargetPlatform.iOS
+          ? kIOSTheme
+          : kDefaultTheme,
       home: ChatScreen(),
     );
   }
@@ -37,16 +49,18 @@ class ChatMessage extends StatelessWidget {
                 child: Text(_name[0]),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(_name, style: Theme.of(context).textTheme.subhead),
-                Container(
-                  margin: EdgeInsets.only(top: 5.0),
-                  child: Text(text),
-                )
-              ],
-            )
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(_name, style: Theme.of(context).textTheme.subhead),
+                  Container(
+                    margin: EdgeInsets.only(top: 5.0),
+                    child: Text(text),
+                  )
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -65,7 +79,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _isComposing = false;
 
   void _handleSubmitted(String text) {
-    //debugPrint(text);
     _textController.clear();
     setState(() {
       _isComposing = false;
@@ -106,7 +119,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   _isComposing = text.length > 0;
                 });
               },
-              onSubmitted: _handleSubmitted,
+              onSubmitted: _isComposing ? _handleSubmitted : null,
               decoration: InputDecoration.collapsed(hintText: "Enviar mensaje"),
             )),
             Container(
